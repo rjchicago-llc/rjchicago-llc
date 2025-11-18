@@ -1,0 +1,35 @@
+# Node / frontend
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js
+.next
+out
+
+# Build artifacts
+/dist
+build
+coverage
+*.tsbuildinfo
+
+# Env files
+.env
+api/.env
+
+# Editor
+.vscode
+.idea
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Docker
+**/node_modules
+**/.next
+
+**/temp

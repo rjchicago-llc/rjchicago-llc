@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    --color-bg: 248 249 251;
+    --color-bg-subtle: 243 244 246;
+    --color-surface: 255 255 255;
+    --color-surface-raised: 248 250 252;
+    --color-border: 226 232 240;
+    --color-border-strong: 203 213 225;
+    --color-text-primary: 15 23 42;
+    --color-text-secondary: 51 65 85;
+    --color-text-muted: 100 116 139;
+    --color-text-inverted: 255 255 255;
+    --color-accent: 0 120 212;
+    --color-accent-soft: 133 182 255;
+    --color-accent-strong: 2 110 193;
+    --color-accent-contrast: 24 24 24;
+    --color-success: 46 160 67;
+    --color-warning: 187 128 9;
+    --color-danger: 248 81 73;
+    --color-focus: 0 120 212;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --color-bg: 24 24 24;
+    --color-bg-subtle: 31 31 31;
+    --color-surface: 31 31 31;
+    --color-surface-raised: 40 40 40;
+    --color-border: 43 43 43;
+    --color-border-strong: 60 60 60;
+    --color-text-primary: 204 204 204;
+    --color-text-secondary: 157 157 157;
+    --color-text-muted: 134 134 134;
+    --color-text-inverted: 255 255 255;
+    --color-accent: 0 120 212;
+    --color-accent-soft: 133 182 255;
+    --color-accent-strong: 2 110 193;
+    --color-accent-contrast: 12 18 24;
+    --color-success: 46 160 67;
+    --color-warning: 187 128 9;
+    --color-danger: 248 81 73;
+    --color-focus: 0 120 212;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-ink-primary antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-ink-inverted px-6 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-accent text-accent px-6 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-accent hover:text-ink-inverted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  
+  .section-padding {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-max {
+    @apply max-w-7xl mx-auto;
+  }
+}

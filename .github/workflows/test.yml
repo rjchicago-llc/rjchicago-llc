@@ -1,0 +1,43 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+  workflow_call:
+
+jobs:
+  test-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build web production image
+        run: docker compose build web
+
+      - name: Run web tests inside container
+        run: docker compose run --rm web npm run test
+
+  test-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare API environment
+        run: |
+          if [ ! -f api/.env ]; then
+            cp api/.env.example api/.env
+          fi
+
+      - name: Build API production image
+        run: docker compose build api
+
+      - name: Run API tests inside container
+        run: docker compose run --rm api npm run test
