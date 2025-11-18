@@ -1,5 +1,10 @@
 # RJChicago, LLC - Consulting Website
 
+[![Test Status](https://github.com/rjchicago-llc/rjchicago-llc/workflows/Test/badge.svg)](https://github.com/rjchicago-llc/rjchicago-llc/actions)
+[![Build Status](https://github.com/rjchicago-llc/rjchicago-llc/workflows/Build/badge.svg)](https://github.com/rjchicago-llc/rjchicago-llc/actions)
+[![Docker Hub Web](https://img.shields.io/docker/v/rjchicago/rjchicago-llc-web?label=Web%20Image)](https://hub.docker.com/r/rjchicago/rjchicago-llc-web)
+[![Docker Hub API](https://img.shields.io/docker/v/rjchicago/rjchicago-llc-api?label=API%20Image)](https://hub.docker.com/r/rjchicago/rjchicago-llc-api)
+
 A modern, responsive single-page application built with Next.js and Tailwind CSS for RJChicago, LLC consulting business.
 
 ## Features
