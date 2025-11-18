@@ -15,8 +15,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  WEB_IMAGE: rjchicago/rjchicago-web
-  API_IMAGE: rjchicago/rjchicago-api
+  WEB_IMAGE: rjchicago/rjchicago-llc-web
+  API_IMAGE: rjchicago/rjchicago-llc-api
 
 jobs:
   test:

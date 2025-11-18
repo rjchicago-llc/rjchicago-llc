@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: rjchicago/rjchicago-web:${VERSION:-latest}
+    image: rjchicago/rjchicago-llc-web:${VERSION:-latest}
     build:
       context: ./web
       target: ${TARGET:-development}
@@ -14,10 +14,10 @@ services:
     volumes:
       - ./web/src:/web/src
     restart: unless-stopped
-    container_name: rjchicago-web
+    container_name: rjchicago-llc-web
 
   api:
-    image: rjchicago/rjchicago-api:${VERSION:-latest}
+    image: rjchicago/rjchicago-llc-api:${VERSION:-latest}
     build:
       context: ./api
       target: ${TARGET:-development}
@@ -32,4 +32,4 @@ services:
     env_file:
       - ./api/.env
     restart: unless-stopped
-    container_name: rjchicago-api
+    container_name: rjchicago-llc-api

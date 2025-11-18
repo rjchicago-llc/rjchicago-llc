@@ -110,8 +110,8 @@ To add new sections or modify existing ones:
    ```
 
 ### Docker Deployment
-- `docker-compose up rjchicago-dev --build` starts the frontend dev server.
-- `docker-compose up rjchicago-api --build` starts the backend.
+- `docker-compose up rjchicago-llc-web --build` starts the frontend web server.
+- `docker-compose up rjchicago-llc-api --build` starts the backend api server.
 - `docker-compose up` (no service name) brings both up together; add `-d` for detached mode.
 - `docker-compose down` stops everything.
 
