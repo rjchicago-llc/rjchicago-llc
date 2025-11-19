@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     image: rjchicago/rjchicago-llc-web:${VERSION:-latest}

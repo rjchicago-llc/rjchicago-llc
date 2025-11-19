@@ -6,12 +6,12 @@ RUN apk add --no-cache libc6-compat
 # Install dependencies (shared for prod build)
 FROM base AS deps
 COPY package*.json ./
-RUN npm install --force
+RUN npm ci --only=production && npm cache clean --force
 
 # Development image (hot reload)
 FROM base AS development
 COPY package*.json ./
-RUN npm install --force
+RUN npm ci
 COPY . .
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
