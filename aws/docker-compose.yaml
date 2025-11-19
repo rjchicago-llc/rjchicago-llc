@@ -51,6 +51,8 @@ services:
       - traefik.http.routers.www-api.middlewares=api-strip
       - traefik.http.middlewares.api-strip.stripprefix.prefixes=/api
       - traefik.http.services.www-api.loadbalancer.server.port=4000
+    env_file:
+      - ./api/.env
     restart: unless-stopped
 
   cman:
