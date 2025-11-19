@@ -45,10 +45,10 @@ ENV NODE_ENV=production
 # Create non-root user
 RUN useradd -m nextjs
 
-# Copy standalone output
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy standalone output and static files
+COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 
 USER nextjs
 
