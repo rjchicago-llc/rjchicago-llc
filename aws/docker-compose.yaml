@@ -27,6 +27,8 @@ services:
 
   www-web:
     image: rjchicago/rjchicago-llc-web:latest
+    environment:
+      - NEXT_PUBLIC_CONTACT_ENDPOINT=https://www.rjchicago.com/api/contact
     labels:
       - traefik.enable=true
       - traefik.http.routers.www-web.rule=Host(`www.rjchicago.com`) || Host(`rjchicago.com`)
