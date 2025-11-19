@@ -36,6 +36,10 @@ services:
   
   www-api:
     image: rjchicago/rjchicago-llc-api:latest
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - CORS_ORIGIN=https://www.rjchicago.com,https://rjchicago.com
     labels:
       - traefik.enable=true
       - traefik.http.routers.www-api.rule=(Host(`www.rjchicago.com`) || Host(`rjchicago.com`)) && PathPrefix(`/api`)
