@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# wget -O docker-compose.yml https://raw.githubusercontent.com/rjchicago-llc/rjchicago-llc/main/aws/deploy.sh
+# wget -O deploy.sh https://raw.githubusercontent.com/rjchicago-llc/rjchicago-llc/main/aws/deploy.sh
 # chmod +x deploy.sh
 
 # Download latest docker-compose configuration
