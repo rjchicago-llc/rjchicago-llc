@@ -14,7 +14,7 @@ export const siteConfig = {
   contact: {
     // email: "ryan@rjchicago.com", // Update with your email
     // phone: "+1 (312) 555-0123", // Update with your phone
-    formEndpoint: process.env.NEXT_PUBLIC_CONTACT_ENDPOINT,
+    formEndpoint: process.env.NEXT_PUBLIC_CONTACT_ENDPOINT || "/api/contact",
     useMailto: false, // Set to true to fall back to mailto
   },
 
