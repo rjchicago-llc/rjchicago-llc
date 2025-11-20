@@ -15,6 +15,20 @@ services:
       - --certificatesresolvers.acme.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.acme.acme.email=you@rjchicago.com
       - --certificatesresolvers.acme.acme.storage=/letsencrypt/acme.json
+    labels:
+      - traefik.enable=true
+
+      # redirect naked domain -> www (HTTPS)
+      - traefik.http.routers.redirect-root.rule=Host(`rjchicago.com`)
+      - traefik.http.routers.redirect-root.entrypoints=websecure
+      - traefik.http.routers.redirect-root.tls=true
+      - traefik.http.routers.redirect-root.tls.certresolver=acme
+      - traefik.http.routers.redirect-root.middlewares=redirect-to-www
+      - traefik.http.routers.redirect-root.priority=100
+
+      - traefik.http.middlewares.redirect-to-www.redirectregex.regex=^https?://rjchicago\.com(.*)
+      - traefik.http.middlewares.redirect-to-www.redirectregex.replacement=https://www.rjchicago.com$$1
+      - traefik.http.middlewares.redirect-to-www.redirectregex.permanent=true
     ports:
       - "80:80"
       - "443:443"
