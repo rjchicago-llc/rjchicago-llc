@@ -35,3 +35,5 @@ logs
 **/letsencrypt
 **/temp
 *.pem
+
+replit/

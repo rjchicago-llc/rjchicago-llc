@@ -43,7 +43,7 @@ services:
     image: rjchicago/rjchicago-llc-web:latest
     labels:
       - traefik.enable=true
-      - traefik.http.routers.www-web.rule=Host(`www.rjchicago.com`) || Host(`rjchicago.com`)
+      - traefik.http.routers.www-web.rule=Host(`llc.rjchicago.com`)
       - traefik.http.routers.www-web.entrypoints=websecure
       - traefik.http.routers.www-web.tls=true
       - traefik.http.routers.www-web.tls.certresolver=acme
@@ -55,10 +55,10 @@ services:
     environment:
       - PORT=4000
       - NODE_ENV=production
-      - CORS_ORIGIN=https://www.rjchicago.com,https://rjchicago.com
+      - CORS_ORIGIN=https://llc.rjchicago.com
     labels:
       - traefik.enable=true
-      - traefik.http.routers.www-api.rule=(Host(`www.rjchicago.com`) || Host(`rjchicago.com`)) && PathPrefix(`/api`)
+      - traefik.http.routers.www-api.rule=(Host(`llc.rjchicago.com`) && PathPrefix(`/api`)
       - traefik.http.routers.www-api.entrypoints=websecure
       - traefik.http.routers.www-api.tls=true
       - traefik.http.routers.www-api.tls.certresolver=acme
@@ -67,6 +67,17 @@ services:
       - traefik.http.services.www-api.loadbalancer.server.port=4000
     env_file:
       - ./api/.env
+    restart: unless-stopped
+
+  rj-web:
+    image: rjchicago/rj:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rj-web.rule=Host(`www.rjchicago.com`) || Host(`rjchicago.com`)
+      - traefik.http.routers.rj-web.entrypoints=websecure
+      - traefik.http.routers.rj-web.tls=true
+      - traefik.http.routers.rj-web.tls.certresolver=acme
+      - traefik.http.services.rj-web.loadbalancer.server.port=80
     restart: unless-stopped
 
   cman:
@@ -79,3 +90,106 @@ services:
       - traefik.http.routers.cman.tls.certresolver=acme
       - traefik.http.services.cman.loadbalancer.server.port=80
     restart: unless-stopped
+
+  parti:
+    image: rjchicago/parti:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.parti.rule=Host(`parti.rjchicago.com`)
+      - traefik.http.routers.parti.entrypoints=websecure
+      - traefik.http.routers.parti.tls=true
+      - traefik.http.routers.parti.tls.certresolver=acme
+      - traefik.http.services.parti.loadbalancer.server.port=80
+    restart: unless-stopped
+
+  tinyauth:
+    image: ghcr.io/steveiliop56/tinyauth:v4
+    env_file:
+      - ./tinyauth/.env
+    labels:
+      traefik.enable: true
+
+      # tinyauth UI
+      traefik.http.routers.tinyauth.rule: Host(`tinyauth.rjchicago.com`)
+      traefik.http.routers.tinyauth.entrypoints: websecure
+      traefik.http.routers.tinyauth.tls: "true"
+      traefik.http.routers.tinyauth.tls.certresolver: acme
+      traefik.http.services.tinyauth.loadbalancer.server.port: "3000"
+
+      # forwardAuth middleware (this is the key)
+      traefik.http.middlewares.tinyauth.forwardauth.address: http://tinyauth:3000/api/auth/traefik
+      traefik.http.middlewares.tinyauth.forwardauth.trustForwardHeader: "true"
+      traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders: Remote-User,Remote-Email,Remote-Name
+      traefik.http.middlewares.tinyauth.forwardauth.authRequestHeaders: Cookie
+
+  replyte-db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: replyte
+      POSTGRES_USER: replyte
+      POSTGRES_PASSWORD: replyte
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U replyte -d replyte"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  replyte-web:
+    image: rjchicago/replyte-web:${TAG:-latest}
+    build: ./web
+    environment:
+      - PORT=3001
+      - HOST=0.0.0.0
+    labels:
+      traefik.enable: true
+      traefik.http.routers.web.rule: Host(`replyte.rjchicago.com`) && !PathPrefix(`/api`)
+      traefik.http.routers.web.entrypoints: websecure
+      traefik.http.routers.web.tls: true
+      traefik.http.routers.web.tls.certresolver: acme
+      traefik.http.routers.web.middlewares: tinyauth@docker
+      traefik.http.routers.web.service: web-service
+      traefik.http.services.web-service.loadbalancer.server.port: 3001
+
+  replyte-server:
+    image: rjchicago/replyte-server:${TAG:-latest}
+    build: ./server
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgres://replyte:replyte@replyte-db:5432/replyte
+      - TINYAUTH_SECRET=dev-secret-key-change-in-production
+    labels:
+      traefik.enable: true
+      
+      # Auth routes (no middleware)
+      traefik.http.routers.server-auth.rule: Host(`replyte.rjchicago.com`) && PathPrefix(`/auth`)
+      traefik.http.routers.server-auth.entrypoints: websecure
+      traefik.http.routers.server-auth.tls: true
+      traefik.http.routers.server-auth.tls.certresolver: acme
+      traefik.http.routers.server-auth.middlewares: ""
+      traefik.http.routers.server-auth.service: server-service
+      
+      # API routes (with TinyAuth)
+      traefik.http.routers.server-api.rule: Host(`replyte.rjchicago.com`) && PathPrefix(`/api`)
+      traefik.http.routers.server-api.entrypoints: websecure
+      traefik.http.routers.server-api.tls: true
+      traefik.http.routers.server-api.tls.certresolver: acme
+      traefik.http.routers.server-api.middlewares: tinyauth@docker
+      traefik.http.routers.server-api.service: server-service
+      
+      # Sync routes (no auth - API key based)
+      traefik.http.routers.server-sync.rule: Host(`replyte.rjchicago.com`) && PathPrefix(`/sync`)
+      traefik.http.routers.server-sync.entrypoints: websecure
+      traefik.http.routers.server-sync.tls: true
+      traefik.http.routers.server-sync.tls.certresolver: acme
+      traefik.http.routers.server-sync.middlewares: ""
+      traefik.http.routers.server-sync.service: server-service
+      
+      traefik.http.services.server-service.loadbalancer.server.port: 3000
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
