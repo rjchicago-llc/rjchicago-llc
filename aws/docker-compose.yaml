@@ -37,6 +37,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./letsencrypt:/letsencrypt
+    networks:
+      - traefik
     restart: unless-stopped
 
   www-web:
@@ -48,6 +50,8 @@ services:
       - traefik.http.routers.www-web.tls=true
       - traefik.http.routers.www-web.tls.certresolver=acme
       - traefik.http.services.www-web.loadbalancer.server.port=3000
+    networks:
+      - traefik
     restart: unless-stopped
   
   www-api:
@@ -67,6 +71,8 @@ services:
       - traefik.http.services.www-api.loadbalancer.server.port=4000
     env_file:
       - ./api/.env
+    networks:
+      - traefik
     restart: unless-stopped
 
   rj-web:
@@ -78,6 +84,8 @@ services:
       - traefik.http.routers.rj-web.tls=true
       - traefik.http.routers.rj-web.tls.certresolver=acme
       - traefik.http.services.rj-web.loadbalancer.server.port=80
+    networks:
+      - traefik
     restart: unless-stopped
 
   cman:
@@ -89,6 +97,8 @@ services:
       - traefik.http.routers.cman.tls=true
       - traefik.http.routers.cman.tls.certresolver=acme
       - traefik.http.services.cman.loadbalancer.server.port=80
+    networks:
+      - traefik
     restart: unless-stopped
 
   parti:
@@ -100,6 +110,8 @@ services:
       - traefik.http.routers.parti.tls=true
       - traefik.http.routers.parti.tls.certresolver=acme
       - traefik.http.services.parti.loadbalancer.server.port=80
+    networks:
+      - traefik
     restart: unless-stopped
 
   tinyauth:
@@ -121,6 +133,8 @@ services:
       traefik.http.middlewares.tinyauth.forwardauth.trustForwardHeader: "true"
       traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders: Remote-User,Remote-Email,Remote-Name
       traefik.http.middlewares.tinyauth.forwardauth.authRequestHeaders: Cookie
+    networks:
+      - traefik
 
   replyte-db:
     image: postgres:18-alpine
@@ -130,6 +144,8 @@ services:
       POSTGRES_PASSWORD: replyte
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - traefik
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U replyte -d replyte"]
       interval: 5s
@@ -151,6 +167,8 @@ services:
       traefik.http.routers.web.middlewares: tinyauth@docker
       traefik.http.routers.web.service: web-service
       traefik.http.services.web-service.loadbalancer.server.port: 3001
+    networks:
+      - traefik
 
   replyte-server:
     image: rjchicago/replyte-server:${TAG:-latest}
@@ -188,6 +206,8 @@ services:
       traefik.http.routers.server-sync.service: server-service
       
       traefik.http.services.server-service.loadbalancer.server.port: 3000
+    networks:
+      - traefik
     stdin_open: true
     tty: true
 
@@ -208,6 +228,8 @@ services:
       - traefik.http.routers.umami.tls=true
       - traefik.http.routers.umami.tls.certresolver=acme
       - traefik.http.services.umami.loadbalancer.server.port=3000
+    networks:
+      - traefik
     init: true
     restart: unless-stopped
     healthcheck:
@@ -223,6 +245,8 @@ services:
       POSTGRES_PASSWORD: umami
     volumes:
       - umami-db-data:/var/lib/postgresql/data
+    networks:
+      - traefik
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -234,3 +258,8 @@ services:
 volumes:
   umami-db-data:
   postgres_data:
+
+networks:
+  traefik:
+    name: traefik
+    driver: bridge
