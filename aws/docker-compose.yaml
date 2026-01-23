@@ -114,6 +114,19 @@ services:
       - traefik
     restart: unless-stopped
 
+  waveform:
+    image: rjchicago/waveform:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.waveform.rule=Host(`waveform.rjchicago.com`)
+      - traefik.http.routers.waveform.entrypoints=websecure
+      - traefik.http.routers.waveform.tls=true
+      - traefik.http.routers.waveform.tls.certresolver=acme
+      - traefik.http.services.waveform.loadbalancer.server.port=80
+    networks:
+      - traefik
+    restart: unless-stopped
+
   tinyauth:
     image: ghcr.io/steveiliop56/tinyauth:v4
     env_file:
